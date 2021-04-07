@@ -8,8 +8,9 @@ h1 {
 p {
   @apply mb-1;
 }
-button {
-  @apply px-4 py-2 bg-blue-700 rounded-sm text-white text-sm hover:bg-blue-800 cursor-pointer;
+button,
+.button {
+  @apply px-4 py-2 bg-blue-700 rounded-sm text-white text-sm hover:bg-blue-800 cursor-pointer inline-block;
 }
 
 label {

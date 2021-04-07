@@ -6,7 +6,9 @@ export default function Home() {
         This app makes it easy to build dynamic relationships in the Knowledge
         Graph without manually keeping them up to date.
       </p>
-      <a href="/api/auth/start">Get Started</a>
+      <a href="/api/auth/start" className="button mt-2">
+        Connect to Yext
+      </a>
     </div>
   );
 }
