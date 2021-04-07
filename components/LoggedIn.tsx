@@ -12,11 +12,12 @@ const LoggedIn = ({ className }: Props) => {
   const { access_token, accountName, appSpecificAccountId } = cookies;
 
   const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncMessage, setLastSyncMessage] = useState<string>();
   const syncNearbyLocations = async () => {
     setIsSyncing(true);
     const res = await axios.post("/api/updateAllLocations");
     setIsSyncing(false);
-    console.log(res);
+    setLastSyncMessage(`${res.data.totalLocationsUpdated} Locations Updated`);
   };
   return (
     <div>
@@ -27,8 +28,18 @@ const LoggedIn = ({ className }: Props) => {
           Graph without manually keeping them up to date.
         </p>
         <div>{accountName}</div>
-        <div>{access_token}</div>
-        <button onClick={syncNearbyLocations}>Sync Nearby Locations</button>
+
+        {!isSyncing && (
+          <button onClick={syncNearbyLocations} className="mt-4">
+            Sync Nearby Locations
+          </button>
+        )}
+        {isSyncing && <div>Syncing...</div>}
+        {!isSyncing && lastSyncMessage && (
+          <div className="text-green-700 border border-green-200 bg-green-50 py-1 px-2 rounded-sm w-full mt-4 text-center">
+            {lastSyncMessage}
+          </div>
+        )}
       </div>
     </div>
   );

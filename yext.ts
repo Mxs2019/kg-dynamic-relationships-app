@@ -26,7 +26,6 @@ export type LocationType = {
     line1: string;
     line2: string;
   };
-  c_nearbyLocations: string[];
 };
 
 export type EntitiesResponse = {
@@ -36,12 +35,12 @@ export type EntitiesResponse = {
 };
 
 export const getEntities = async (
-  api_key: string,
-  entityType: "location",
+  access_token: string,
+  entityTypes: string[],
   pageToken?: string
 ): Promise<EntitiesResponse> => {
   const res = await yextApi.get("/entities", {
-    params: { api_key, pageToken, entityTypes: entityType },
+    params: { access_token, pageToken, entityTypes: entityTypes.join(",") },
   });
 
   const response: EntitiesResponse = {
@@ -52,7 +51,7 @@ export const getEntities = async (
   if (res.data.response.pageToken) {
     console.log("Adding Next Page");
     response.nextPage = () =>
-      getEntities(api_key, entityType, res.data.response.pageToken);
+      getEntities(access_token, entityTypes, res.data.response.pageToken);
   }
   return response;
 };
@@ -64,7 +63,8 @@ export type LocationsResponse = {
 };
 
 export const getNearbyLocations = async (
-  api_key: string,
+  access_token: string,
+  entityTypes: string[],
   cooridinates: {
     latitude: number;
     longitude: number;
@@ -76,10 +76,10 @@ export const getNearbyLocations = async (
       `https://liveapi.yext.com/v2/accounts/me/entities/geosearch`,
       {
         params: {
-          api_key,
+          access_token,
           v,
           location: `${latitude}, ${longitude}`,
-          entityTypes: "location",
+          entityTypes: entityTypes.join(","),
         },
       }
     );
@@ -92,6 +92,30 @@ export const getNearbyLocations = async (
   }
 };
 
-export const updateEntity = async (entityId: string, update: object) => {
-  return yextApi.put(`/entities/${entityId}`, update);
+export const updateEntity = (
+  access_token: string,
+  entityId: string,
+  update: object
+) => {
+  return yextApi.put(`/entities/${entityId}`, update, {
+    params: { access_token },
+  });
+};
+
+export const createNearbyLocationsCustomField = async (
+  access_token: string,
+  entityTypes: string[]
+) => {
+  yextApi.post(
+    `/customfields`,
+    {
+      name: {
+        value: "Nearby Locations",
+      },
+      id: "c_nearbyLocations",
+      type: "ENTITY_LIST",
+      entityAvailability: entityTypes,
+    },
+    { params: { access_token } }
+  );
 };

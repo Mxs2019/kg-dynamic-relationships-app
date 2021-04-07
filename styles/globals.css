@@ -9,6 +9,17 @@ p {
   @apply mb-1;
 }
 button {
-  @apply px-2 py-1 bg-blue-800 rounded-sm text-white text-sm;
+  @apply px-4 py-2 bg-blue-700 rounded-sm text-white text-sm hover:bg-blue-800 cursor-pointer;
 }
+
+label {
+  @apply block text-sm font-medium text-gray-700 mt-3;
+}
+
+.css-2b097c-container input:focus,
+.ant-select input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 @tailwind utilities;

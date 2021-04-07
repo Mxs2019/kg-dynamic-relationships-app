@@ -5,47 +5,61 @@ import {
   updateEntity,
 } from "./yext";
 
-const maxLength = 5;
+export type NearbyConfig = {
+  entityTypes: string[];
+  maxNearbyLocations: number;
+  fieldApiName: string;
+};
 
 export const syncSelectedLocation = async (
   access_token: string,
+  { maxNearbyLocations, fieldApiName, entityTypes }: NearbyConfig,
   location: LocationType
 ) => {
   try {
     const { locations: nearbyLocations } = await getNearbyLocations(
       access_token,
+      entityTypes,
       location.geocodedCoordinate
     );
 
-    await updateEntity(location.meta.id, {
-      c_nearbyLocations: nearbyLocations
+    await updateEntity(access_token, location.meta.id, {
+      [fieldApiName]: nearbyLocations
         .filter((nb) => nb.meta.uid !== location.meta.uid)
-        .filter((_, i) => i < maxLength)
+        .filter((_, i) => i < maxNearbyLocations)
         .map((l) => l.meta.id),
     });
-    console.log(`Added Nearby Locations to ${location.meta.id}`);
+    return true;
   } catch (e) {
-    console.log(e);
-    console.log("Nearby Location Error");
+    console.log("Unable to Sync Location");
+    return false;
   }
 };
 
-export const syncAllLocations = async (access_token: string) => {
-  let entitiesRes = await getEntities(access_token, "location");
+export const syncAllLocations = async (
+  access_token: string,
+  config: NearbyConfig
+) => {
+  let entitiesRes = await getEntities(access_token, config.entityTypes);
   let totalLocationsUpdated = 0;
   do {
     const locations = entitiesRes.entities as LocationType[];
-    locations.forEach(async (l) => {
-      totalLocationsUpdated += 1;
-      syncSelectedLocation(access_token, l);
-    });
+    await Promise.all(
+      locations.map(async (l) => {
+        const success = await syncSelectedLocation(access_token, config, l);
+        if (success) {
+          totalLocationsUpdated += 1;
+          console.log("Successly Updated");
+        }
+      })
+    );
     if (entitiesRes.nextPage) {
       entitiesRes = await entitiesRes.nextPage();
-      console.log("Getting Next Page");
     } else {
       entitiesRes = undefined;
     }
   } while (entitiesRes);
 
+  console.log(totalLocationsUpdated);
   return totalLocationsUpdated;
 };
