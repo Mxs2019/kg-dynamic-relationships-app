@@ -23,11 +23,11 @@ export default function Home({ accountName }) {
           <div className="text-xs">Coming Soon</div>
         </div>
         <div className="card-disabled">
-          <h3>Location Directory</h3>
+          <h3>Product Category</h3>
           <div className="text-xs">Coming Soon</div>
         </div>
         <div className="card-disabled">
-          <h3>Location Directory</h3>
+          <h3>Related Products</h3>
           <div className="text-xs">Coming Soon</div>
         </div>
       </div>
