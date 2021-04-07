@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="">
@@ -6,9 +8,9 @@ export default function Home() {
         This app makes it easy to build dynamic relationships in the Knowledge
         Graph without manually keeping them up to date.
       </p>
-      <a href="/api/auth/start" className="button mt-2">
-        Connect to Yext
-      </a>
+      <Link href="/api/auth/start">
+        <a className="button mt-2">Connect to Yext</a>
+      </Link>
     </div>
   );
 }

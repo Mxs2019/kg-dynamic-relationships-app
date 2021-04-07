@@ -5,6 +5,10 @@ h1 {
   @apply text-2xl font-bold mb-2;
 }
 
+h3 {
+  @apply font-medium mb-1;
+}
+
 p {
   @apply mb-1;
 }
@@ -15,6 +19,14 @@ button,
 
 label {
   @apply block text-sm font-medium text-gray-700 mt-3;
+}
+
+.card {
+  @apply border p-4 text-center block hover:bg-gray-50 rounded-sm flex flex-col items-center justify-center hover:shadow-sm hover:-translate-y-1 transform transition ease-in-out;
+}
+
+.card-disabled {
+  @apply border p-4 text-center block rounded-sm opacity-70 flex flex-col;
 }
 
 .css-2b097c-container input:focus,

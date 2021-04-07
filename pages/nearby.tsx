@@ -82,7 +82,7 @@ export default function Home() {
           />
         </form>
 
-        {isSyncing && <div>Syncing...</div>}
+        {isSyncing && <div className="mt-2">Syncing...</div>}
         {!isSyncing && lastSyncMessage && (
           <div className="text-green-700 border border-green-200 bg-green-50 py-1 px-2 rounded-sm w-full mt-4 text-center">
             {lastSyncMessage}
