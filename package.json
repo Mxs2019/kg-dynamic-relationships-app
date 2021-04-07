@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.3.2",
+    "@tailwindcss/jit": "^0.1.18",
     "@types/qs": "^6.9.6",
     "antd": "^4.15.0",
     "autoprefixer": "^10.2.5",
