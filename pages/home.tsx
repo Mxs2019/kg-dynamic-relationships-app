@@ -18,6 +18,11 @@ export default function Home({ accountName }) {
             <h3>Nearby Locations</h3>
           </a>
         </Link>
+        <Link href="/graph">
+          <a className="card">
+            <h3>Graph Viewer</h3>
+          </a>
+        </Link>
         <div className="card-disabled">
           <h3>Location Directory</h3>
           <div className="text-xs">Coming Soon</div>

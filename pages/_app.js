@@ -22,11 +22,22 @@ function MyApp({ Component, pageProps }) {
     return <div></div>;
   }
 
+  const logout = () => {
+    removeCookie("accountName");
+    removeCookie("access_token");
+    alert("LOGGED OUT");
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-8">
       <div className="max-w-screen-sm mx-auto">
         <div className="text-xs text-gray-500 mb-2 flex justify-between">
-          {accountName && <div>You are connected to {accountName} </div>}
+          {accountName && (
+            <div>
+              You are connected to {accountName}{" "}
+              <div onClick={logout}>logout</div>
+            </div>
+          )}
           {/* <a href="#">Change Account</a> */}
         </div>
         <div className="p-4 bg-white border shadow-sm rounded-sm">

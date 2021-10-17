@@ -56,6 +56,21 @@ export const getEntities = async (
   return response;
 };
 
+export const getAllEntities = async (
+  access_token: string
+): Promise<EntitiesResponse> => {
+  const res = await yextApi.get("/entities", {
+    params: { access_token },
+  });
+
+  const response: EntitiesResponse = {
+    count: res.data.response.count,
+    entities: res.data.response.entities as object[],
+  };
+
+  return response;
+};
+
 export type LocationsResponse = {
   count: number;
   locations: LocationType[];
