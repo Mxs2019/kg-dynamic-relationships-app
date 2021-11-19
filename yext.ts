@@ -3,10 +3,9 @@ const v = "20210101";
 
 const rootURL = `https://api.yext.com/v2/accounts/me`;
 
-const yextApi = axios.create({
+export const yextApi = axios.create({
   baseURL: "https://api.yext.com/v2/accounts/me",
   timeout: 5000,
-  headers: { "X-Custom-Header": "foobar" },
   params: {
     v,
   },
@@ -62,6 +61,8 @@ export const getAllEntities = async (
   const res = await yextApi.get("/entities", {
     params: { access_token },
   });
+
+  console.log(res);
 
   const response: EntitiesResponse = {
     count: res.data.response.count,

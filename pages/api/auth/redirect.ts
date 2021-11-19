@@ -6,7 +6,7 @@ import qs from "qs";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const baseURL = process.env.BASE_URL;
   const client_id = process.env.CLIENT_ID;
-  const client_secret = process.env.API_KEY;
+  const client_secret = process.env.CLIENT_SECRET;
 
   const code = req.query.code;
   const redirect_uri = req.query.state;

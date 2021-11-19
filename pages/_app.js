@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
     if (!access_token && pathname !== "/") {
       router.push("/");
     } else if (pathname === "/" && access_token) {
-      router.push("/home");
+      router.push("/graph");
     }
   }, [pathname, access_token]);
 
@@ -25,17 +25,17 @@ function MyApp({ Component, pageProps }) {
   const logout = () => {
     removeCookie("accountName");
     removeCookie("access_token");
-    alert("LOGGED OUT");
+    router.push("/");
   };
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
-      <div className="max-w-screen-sm mx-auto">
-        <div className="text-xs text-gray-500 mb-2 flex justify-between">
+      <div className="max-w-screen-xl mx-auto">
+        <div className="text-xs text-gray-500 mb-2 w-full">
           {accountName && (
-            <div>
-              You are connected to {accountName}{" "}
-              <div onClick={logout}>logout</div>
+            <div className="flex gap-2 justify-between">
+              <div>You are connected to {accountName}</div>
+              <button onClick={logout}>Log out of this Account</button>
             </div>
           )}
           {/* <a href="#">Change Account</a> */}
