@@ -1,9 +1,15 @@
-import Cookies from "js-cookie";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import Graph from "react-graph-vis";
 import { FaRedo } from "react-icons/fa";
 import HashLoader from "react-spinners/HashLoader";
-import { yextApi } from "../yext";
+
+function timeout(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const MAX_SIZE = 2000;
+const SLEEP_TIME_MS = 500;
 
 export default function GraphViewer() {
   const [fetchingEntities, setFetchingEntities] = useState(false);
@@ -13,22 +19,35 @@ export default function GraphViewer() {
   const [percentLoaded, setPercentLoaded] = useState(0);
 
   const getAllEntities = async () => {
-    const access_token = Cookies.get("access_token");
-    if (access_token) {
-      const res = await yextApi.get("/entities", {
-        params: { access_token },
+    setFetchingEntities(true);
+    setEntities([]);
+    setPercentLoaded(0);
+    setSelectedNode(undefined);
+
+    let nextPageToken = undefined;
+
+    const entitiesToAdd = [];
+
+    do {
+      console.log("Fetching Page");
+      const res = await axios.post("/api/getAllEntities", {
+        pageToken: nextPageToken,
       });
+      const data = res.data;
 
-      const { entities, count, pageToken } = res.data;
-      console.log(entities, count, pageToken);
+      nextPageToken = data.pageToken;
 
-      // setFetchingEntities(true);
-      // setEntities([]);
-      // setFetchingEntities(false);
-      // if (res.data.entities) {
-      //   setEntities(res.data.entities);
-      // }
-    }
+      if (entities) {
+        setPercentLoaded(
+          (entitiesToAdd.length + data.entities.length) /
+            Math.min(data.count, MAX_SIZE)
+        );
+        entitiesToAdd.push(...data.entities);
+      }
+      await timeout(SLEEP_TIME_MS);
+    } while (nextPageToken && entitiesToAdd.length < MAX_SIZE);
+    setEntities(entitiesToAdd);
+    setFetchingEntities(false);
   };
 
   const options = {
@@ -48,7 +67,6 @@ export default function GraphViewer() {
         const entity = entities.find((e) => e.meta.id === nodeId);
         if (entity) {
           setSelectedNode(entity);
-          console.log(entity);
         }
       } else {
         setSelectedNode(undefined);
@@ -80,7 +98,7 @@ export default function GraphViewer() {
 
     return {
       id: e.meta.id,
-      label: e.name,
+      label: e.name.length > 10 ? e.name.substring(0, 10) + "..." : e.name,
       color: color ?? "blue",
       shape: "ellipse",
       font: {
@@ -147,12 +165,12 @@ export default function GraphViewer() {
                   {edges.length} Edges
                 </div>
               </div>
+              <div className="flex-grow"></div>
+              <button onClick={getAllEntities} className="p-2">
+                <FaRedo />
+              </button>
             </>
           )}
-          <div className="flex-grow"></div>
-          <button onClick={getAllEntities} className="p-2">
-            <FaRedo />
-          </button>
         </div>
         <div
           className="flex items-center w-full justify-center "
@@ -164,15 +182,20 @@ export default function GraphViewer() {
                 <Graph graph={graph} options={options} events={events} />
               </div>
 
-              <div className="w-72 ml-4 p-4 bg-gray-100  border rounded overflow-hidden">
+              <div
+                style={{ width: "400px" }}
+                className=" ml-4 p-4 bg-gray-100 flex-none border rounded overflow-hidden"
+              >
                 <div className="uppercase tracking-wider text-xs text-gray-500 pb-1 mb-1 border-b">
                   Selected Node
                 </div>
                 {selectedNode && (
                   <div className="flex flex-col gap-1">
-                    <div>ID: {selectedNode.meta.id}</div>
                     <div>Name: {selectedNode.name}</div>
                     <div>Entity Type: {selectedNode.meta.entityType}</div>
+                    <div className="overflow-ellipsis">
+                      ID: {selectedNode.meta.id}
+                    </div>
                     <a
                       className="px-2 py-1 text-center bg-blue-700 flex items-center justify-center text-white"
                       target="_blank"
@@ -198,6 +221,10 @@ export default function GraphViewer() {
               <div className="text-gray-500 text-sm">
                 This might take a minute
               </div>
+              <div className="text-gray-500 text-sm">
+                {percentLoaded * 100}% Completed
+              </div>
+
               <HashLoader size={40} color="gray" />
             </div>
           )}
